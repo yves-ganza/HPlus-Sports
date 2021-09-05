@@ -20,11 +20,20 @@
 		const location = $('#location').val();
 		$('#location').val('');
 
-		$.get(url + location + '&appid=' + apiKey).done(function(response) {
-			updateUISuccess(response);
-		}).fail(function() {
-			updateUIFailure();
-		});
+		// $.get(url + location + '&appid=' + apiKey).done(function(response) {
+		// 	updateUISuccess(response);
+		// }).fail(function() {
+		// 	updateUIFailure();
+		// });
+
+		fetch(url + location + '&appid=' + apiKey).then(function(response){
+			response.json().then(function(data){
+				updateUISuccess(data)
+			})
+		}).catch(function(error){
+			console.log(error)
+			updateUIFailure()
+		})
 	});
 
 	// update list of sports when user selects a different category (solo/team/all)
