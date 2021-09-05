@@ -15,29 +15,27 @@
 	let category = 'all';
 
 	// get weather data when user clicks Forecast button, then add temp & conditions to view
-	$('.forecast-button').click(function(e) {
+	document.querySelector('.forecast-button').addEventListener('click', function(e){
 		e.preventDefault();
-		const location = $('#location').val();
-		$('#location').val('');
 
-		// $.get(url + location + '&appid=' + apiKey).done(function(response) {
-		// 	updateUISuccess(response);
-		// }).fail(function() {
-		// 	updateUIFailure();
-		// });
+		const location = document.querySelector('#location').value
+		document.querySelector('#location').textContent = ''
 
 		fetch(url + location + '&appid=' + apiKey).then(function(response){
 			response.json().then(function(data){
 				updateUISuccess(data)
+			}).catch(function(err){
+				updateUIFailure()
 			})
 		}).catch(function(error){
-			console.log(error)
 			updateUIFailure()
 		})
 	});
 
 	// update list of sports when user selects a different category (solo/team/all)
-	$('.options div').on('click', updateActivityList);
+	document.querySelectorAll('.options div').forEach(function(el){
+		el.addEventListener('click', updateActivityList)
+	})
 
 	// handle ajax success
 	function updateUISuccess(response) {
@@ -53,9 +51,9 @@
 			city: response.name
 		};
 
-		const $into = $('.conditions')[0];
+		const into = document.querySelector('.conditions')
 
-		ReactDOM.render(<Forecast {...state} />, $into);
+		ReactDOM.render(<Forecast {...state} />, into);
 
 		function Forecast(props) {
 			return (
@@ -71,19 +69,25 @@
 
 	// handle selection of a new category (team/solo/all) 
 	function updateActivityList(event) {
-		if (event !== undefined && $(this).hasClass('selected')) {
+
+		if(event !== undefined && event.target.classList.contains('selected')){
 			// if the 'event' parameter is defined, then a tab has been clicked; if not, then this is the
 			//   default case and the view simply needs to be updated
 			// if the clicked tab has the class 'selected', then no need to change location of 'selected' class
 			//   or change the DOM
 			return true;
-		} else if (event !== undefined && !$(this).hasClass('selected')) {
+
+		} else if(event !== undefined && !event.target.classList.contains('selected')){
 			// if the 'event' parameter is defined, then a tab has been clicked
 			// if the clicked tab does not have the class 'selected', then location of 'selected' class must be added
 			//   to the clicked element and removed from its siblings
-			category = $(this).attr('id');
-			$('.options div').removeClass('selected');
-			$(this).addClass('selected');
+			category = event.target.id
+
+			document.querySelectorAll('.options div').forEach(function(el){
+				el.classList = []
+			})
+
+			event.target.classList.add('selected')
 		} 
 
 		state.activities = [];
@@ -106,9 +110,9 @@
 			}
 		}
 
-		const $into = $('.activities')[0];
+		const into = document.querySelector('.activities')
 
-		ReactDOM.render(<Activities {...state} />, $into);
+		ReactDOM.render(<Activities {...state} />, into);
 
 		function Activities(props) {
 			const activitiesList = props.activities.map(function(activity, index) {
@@ -126,6 +130,6 @@
 
 	// handle ajax failure
 	function updateUIFailure() {
-		$(".conditions").text("Weather information unavailable");
+		document.querySelector('.conditions').textContent = 'Weather information un available';
 	}
 })();
