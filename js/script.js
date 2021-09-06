@@ -53,16 +53,40 @@
 
 		const into = document.querySelector('.conditions')
 
-		ReactDOM.render(<Forecast {...state} />, into);
+		const cityP = document.createElement('p')
+		cityP.setAttribute('class','city')
+		cityP.textContent = state.city
 
-		function Forecast(props) {
-			return (
-				<div>
-					<p className="city">{props.city}</p>
-					<p>{props.degCInt}&#176; C / {props.degFInt}&#176; F <img src={props.icon} alt={props.condition} /></p>
-				</div>
-			)
+
+		const conditionImg = document.createElement('img')
+		conditionImg.setAttribute('src', state.icon)
+		conditionImg.setAttribute('alt', state.condition)
+
+		const conditionsP = document.createElement('p')
+		conditionsP.textContent = `${state.degCInt} ${String.fromCharCode(176)}C / ${state.degFInt}${String.fromCharCode(176)}F`
+		conditionsP.appendChild(conditionImg)
+
+		const forecastDiv = document.createElement('div')
+		forecastDiv.appendChild(cityP)
+		forecastDiv.appendChild(conditionsP)
+
+		//Clear previous results from the screen
+		if(into.childNodes[0]){
+			into.removeChild(into.childNodes[0])
 		}
+		
+		into.appendChild(forecastDiv)
+
+		// ReactDOM.render(<Forecast {...state} />, into);
+
+		// function Forecast(props) {
+		// 	return (
+		// 		<div>
+		// 			<p className="city">{props.city}</p>
+		// 			<p>{props.degCInt}&#176; C / {props.degFInt}&#176; F <img src={props.icon} alt={props.condition} /></p>
+		// 		</div>
+		// 	)
+		// }
 
 		updateActivityList();
 	}
@@ -111,25 +135,30 @@
 		}
 
 		const into = document.querySelector('.activities')
-
-		ReactDOM.render(<Activities {...state} />, into);
-
-		function Activities(props) {
-			const activitiesList = props.activities.map(function(activity, index) {
-				return <li key={index}>{activity}</li>
-			});
-			return (
-				<div>
-					<ul>{activitiesList}</ul>
-				</div>
-			)
+		
+		if(into.childNodes[0]){
+			into.removeChild(into.childNodes[0])
 		}
+
+		const activitiesDiv = document.createElement('div')
+		const activitiesList = document.createElement('ul')
+
+		state.activities.forEach(function(activity, index){
+			const listItem = document.createElement('li')
+			listItem.setAttribute('key', index)
+			listItem.textContent = activity
+			activitiesList.appendChild(listItem)
+		})
+
+		activitiesDiv.appendChild(activitiesList)
+		into.appendChild(activitiesDiv)
+
 
 		$('.results').slideDown(300);
 	}
 
 	// handle ajax failure
 	function updateUIFailure() {
-		document.querySelector('.conditions').textContent = 'Weather information un available';
+		document.querySelector('.conditions').textContent = 'Weather information unavailable';
 	}
 })();
